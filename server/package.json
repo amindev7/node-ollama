@@ -1,12 +1,14 @@
 {
-  "name": "server",
-  "version": "1.0.0",
-  "main": "server.js",
-  "license": "MIT",
-  "scripts": {
-    "dev": "nodemon --legacy-watch server.js"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.9"
-  }
+    "name": "server",
+    "version": "1.0.0",
+    "main": "server.js",
+    "license": "MIT",
+    "type": "module",
+    "scripts": {
+        "dev": "nodemon --legacy-watch server.js"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.9",
+        "prettier": "3.4.2"
+    }
 }
