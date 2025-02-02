@@ -1,9 +1,8 @@
-# node-ollama
-Node.js chatbot powered by the Ollama API, featuring WebSockets, SQLite storage, and a React frontend.
+# Node-Ollama
 
-/node-ollama
-    /server (Node.js)
-    /ui (React)
-    /db (SQLite)
-    docker-compose.yml
-    .env
+📂 node-ollama
+
+┣ 📂 server — Backend service (Node.js)  
+┣ 📂 ui — Frontend client (React)  
+┣ 📂 db — Database (SQLite)  
+┗ 📝 docker-compose.yml — Docker setup  
