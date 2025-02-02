@@ -1,0 +1,11 @@
+services:
+    server:
+        build:
+            context: ./server
+            dockerfile: Dockerfile
+        env_file: server/.env
+        ports:
+            - '3001:3001'
+        volumes:
+            - ./server:/app
+            - /app/node_modules
