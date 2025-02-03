@@ -3,9 +3,25 @@ services:
         build:
             context: ./server
             dockerfile: Dockerfile
-        env_file: server/.env
+        container_name: server
+        env_file: .env
         ports:
-            - '3001:3001'
+            - "${PORT}:${PORT}"
         volumes:
             - ./server:/app
             - /app/node_modules
+        networks:
+            - node-ollama-network
+
+    ollama-client:
+        image: ollama/ollama
+        volumes:
+            - ./ollama:/root/.ollama
+        ports:
+            - "${OLLAMA_PORT}:${OLLAMA_PORT}"
+        networks:
+            - node-ollama-network
+
+networks:
+    node-ollama-network:
+        driver: bridge
