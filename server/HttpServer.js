@@ -74,9 +74,7 @@ class HttpServer {
         this.server.listen(port, callback)
 
         process.on("SIGINT", () => {
-            console.log("\nShutting down server...")
             this.server.close(() => {
-                console.log("Server stopped.")
                 process.exit(0)
             })
         })
