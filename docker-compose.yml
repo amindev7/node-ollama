@@ -6,7 +6,7 @@ services:
         container_name: server
         env_file: .env
         ports:
-            - "${PORT}:${PORT}"
+            - "${SERVER_PORT}:${SERVER_PORT}"
         volumes:
             - ./server:/app
             - /app/node_modules
@@ -17,8 +17,27 @@ services:
         image: ollama/ollama
         volumes:
             - ./ollama:/root/.ollama
+        env_file: .env
         ports:
             - "${OLLAMA_PORT}:${OLLAMA_PORT}"
+        networks:
+            - node-ollama-network
+
+    ui:
+        build:
+            context: ./ui
+            dockerfile: Dockerfile
+        ports:
+            - "${UI_PORT}:${UI_PORT}"
+        env_file: .env
+        volumes:
+            - ./ui:/app
+            - /app/node_modules
+        environment:
+            - NODE_ENV=development
+        command: ["yarn", "dev", "--host"]
+        depends_on:
+            - server
         networks:
             - node-ollama-network
 
