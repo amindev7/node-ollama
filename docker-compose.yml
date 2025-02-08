@@ -16,7 +16,7 @@ services:
     ollama-client:
         image: ollama/ollama
         volumes:
-            - ./ollama:/root/.ollama
+            - ./server/ollama:/root/.ollama
         env_file: .env
         ports:
             - "${OLLAMA_PORT}:${OLLAMA_PORT}"
@@ -35,7 +35,7 @@ services:
             - /app/node_modules
         environment:
             - NODE_ENV=development
-        command: ["yarn", "dev", "--host"]
+        command: [ "yarn", "dev", "--host" ]
         depends_on:
             - server
         networks:

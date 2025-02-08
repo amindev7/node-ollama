@@ -1,5 +1,6 @@
-import HttpServer from "./HttpServer.js"
-import OllamaClient from "./OllamaClient.js"
+import HttpServer from "./src/services/HttpServer.js"
+import OllamaClient from "./src/services/OllamaClient.js"
+import db from "./src/config/db.js"
 
 const server = new HttpServer()
 const ollamaApi = new OllamaClient()
