@@ -1,7 +1,7 @@
 import ResponseWrapper from "./ResponseWrapper.js"
 import http from "http"
-import url from "url"
 import querystring from "querystring"
+import url from "url"
 
 class HttpServer {
     constructor() {
