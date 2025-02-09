@@ -1,0 +1,32 @@
+class HttpResponse {
+    constructor(res) {
+        this.res = res
+    }
+
+    send(status, data) {
+        this.res.writeHead(status, { "Content-Type": "application/json" })
+        this.res.end(JSON.stringify(data))
+    }
+
+    ok(data) {
+        return this.send(200, data)
+    }
+
+    created(data) {
+        return this.send(201, data)
+    }
+
+    badRequest(data) {
+        return this.send(400, data)
+    }
+
+    notFound(data) {
+        return this.send(404, data)
+    }
+
+    serverError(data) {
+        return this.send(500, data)
+    }
+}
+
+export default HttpResponse
