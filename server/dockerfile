@@ -6,7 +6,7 @@ COPY package*.json yarn.lock ./
 
 RUN yarn install
 
-RUN mkdir -p /app/db && chmod 777 /app/db
+RUN mkdir -p /app/db && chmod 777 /app
 
 COPY --chown=node:node . .
 
