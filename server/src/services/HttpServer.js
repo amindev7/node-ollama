@@ -1,4 +1,4 @@
-import ResponseWrapper from "./ResponseWrapper.js"
+import HttpResponse from "./HttpResponse.js"
 import http from "http"
 import querystring from "querystring"
 import url from "url"
@@ -17,17 +17,17 @@ class HttpServer {
         const routeHandler = this.matchRoute(req.method, req.pathname)
 
         if (!routeHandler) {
-            return this.sendResponse(res, 404, { error: "Not Found" })
+            return new HttpResponse(res).notFound({ error: "Not Found" })
         }
 
         if (["POST", "PUT"].includes(req.method)) {
             return this.parseRequestBody(req, res, (body) => {
                 req.body = body
-                routeHandler(req, new ResponseWrapper(res))
+                routeHandler(req, new HttpResponse(res))
             })
         }
 
-        routeHandler(req, new ResponseWrapper(res))
+        routeHandler(req, new HttpResponse(res))
     }
 
     matchRoute(method, pathname) {
@@ -51,14 +51,11 @@ class HttpServer {
 
                 return callback(body)
             } catch (error) {
-                this.sendResponse(res, 400, { error: "Invalid request body" })
+                new HttpResponse(res).badRequest({
+                    error: "Invalid request body",
+                })
             }
         })
-    }
-
-    sendResponse(res, statusCode, data) {
-        res.writeHead(statusCode, { "Content-Type": "application/json" })
-        res.end(JSON.stringify(data))
     }
 
     get(route, handler) {
