@@ -3,12 +3,20 @@ import http from "http"
 import querystring from "querystring"
 import url from "url"
 
+const UI_BASE_URL = `${process.env.UI_URL}:${process.env.UI_PORT}`
+
 class HttpServer {
     constructor() {
         this.routes = { GET: {}, POST: {}, PUT: {}, DELETE: {} }
     }
 
     handleRequest(req, res) {
+        this.setCorsHeaders(res)
+
+        if (req.method === "OPTIONS") {
+            return res.writeHead(204).end()
+        }
+
         const parsedUrl = url.parse(req.url, true)
         req.query = parsedUrl.query
         req.pathname = parsedUrl.pathname
@@ -28,6 +36,18 @@ class HttpServer {
         }
 
         routeHandler(req, new HttpResponse(res))
+    }
+
+    setCorsHeaders(res) {
+        res.setHeader("Access-Control-Allow-Origin", UI_BASE_URL)
+        res.setHeader(
+            "Access-Control-Allow-Methods",
+            "GET, POST, PUT, DELETE, OPTIONS"
+        )
+        res.setHeader(
+            "Access-Control-Allow-Headers",
+            "Content-Type, Authorization"
+        )
     }
 
     matchRoute(method, pathname) {
