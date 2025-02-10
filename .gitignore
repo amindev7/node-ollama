@@ -1,8 +1,11 @@
+/ui/node_modules
 /server/node_modules
 /server/db
 /server/ollama
 /server/.env
-/ui/node_modules
+
+/server/private.pem
+/server/public.pem
 
 # Logs
 logs
