@@ -9,9 +9,7 @@ const initialCredentials = {
 
 const baseUrl = import.meta.env.VITE_API_URL
 
-export function useAuth() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false)
-
+export function useAuth(setIsAuthenticated) {
     const register = useMutation({
         mutationFn: async ({ email, password }) => {
             const response = await fetch(`${baseUrl}/register`, {
@@ -75,6 +73,5 @@ export function useAuth() {
         register,
         validateCredentials,
         initialCredentials,
-        isAuthenticated,
     }
 }
