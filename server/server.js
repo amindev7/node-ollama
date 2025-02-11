@@ -3,9 +3,10 @@ import auth from "./src/routes/auth.js"
 import initializeDatabase from "./src/config/initDB.js"
 import model from "./src/routes/model.js"
 
+const PORT = process.env.SERVER_PORT
+
 const server = new HttpServer()
 
-const PORT = process.env.SERVER_PORT
 async function startServer() {
     await initializeDatabase()
 
