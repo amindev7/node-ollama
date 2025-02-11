@@ -41,17 +41,17 @@ export default (server) => {
             const user = await User.getByEmail(email)
 
             if (!user) {
-                return res.status(400).json({ error: "User not found" })
+                return res.badRequest({ error: "User not found" })
             }
 
             if (!password || !user.password) {
-                return res.status(400).json({ error: "Invalid credentials" })
+                return res.badRequest({ error: "Invalid credentials" })
             }
 
             const match = await bcrypt.compare(password, user.password)
 
             if (!match) {
-                return res.status(400).json({ error: "Invalid credentials" })
+                return res.badRequest({ error: "Invalid credentials" })
             }
 
             const token = jwt.sign(
