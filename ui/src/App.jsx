@@ -6,6 +6,7 @@ import { createContext, useState } from "react"
 import AuthForm from "./AuthForm"
 import ChatUI from "./ChatUI"
 import { MantineProvider } from "@mantine/core"
+import { Toaster } from "react-hot-toast"
 
 export const AppContext = createContext(null)
 
@@ -17,6 +18,7 @@ function App() {
     return (
         <MantineProvider defaultColorScheme="dark">
             <AppContext.Provider value={{ auth, updateAuth }}>{auth.isAuthenticated ? <ChatUI /> : <AuthForm />}</AppContext.Provider>
+            <Toaster toastOptions={{ style: { background: "#242424", color: "#fff" } }} />
         </MantineProvider>
     )
 }

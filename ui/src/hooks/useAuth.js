@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 
 import { AppContext } from "../App"
+import toast from "react-hot-toast"
 
 const baseUrl = import.meta.env.VITE_API_URL
 
@@ -76,6 +77,10 @@ export function useAuth() {
             email: credentials.email,
             password: credentials.password,
         })
+
+        if (isRegister) {
+            toast("Account created successfully")
+        }
     }
 
     const register = useMutation({
