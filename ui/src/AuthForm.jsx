@@ -4,38 +4,10 @@ import { useAuth } from "./hooks/useAuth"
 import { useState } from "react"
 
 function AuthForm({ setIsAuthenticated }) {
-    const { initialCredentials, validateCredentials, login, register } =
-        useAuth(setIsAuthenticated)
-
     const [showRegister, setShowRegister] = useState(false)
-    const [errors, setErrors] = useState({})
-    const [credentials, setCredentials] = useState(initialCredentials)
 
-    const handleChange = (event) => {
-        const { name, value, type, checked } = event.target
-
-        setCredentials((prev) => ({
-            ...prev,
-            [name]: type === "checkbox" ? checked : value,
-        }))
-    }
-
-    const handleSubmit = (isRegister) => {
-        const validationErrors = validateCredentials(credentials, isRegister)
-
-        if (Object.keys(validationErrors).length) {
-            return setErrors(validationErrors)
-        }
-
-        setErrors({})
-
-        const authAction = isRegister ? register : login
-
-        authAction.mutate({
-            email: credentials.email,
-            password: credentials.password,
-        })
-    }
+    const { credentials, errors, handleChange, handleSubmit, register, login } =
+        useAuth(setIsAuthenticated, setShowRegister)
 
     const resError = register.isError || login.isError
     const errMessage = register.error?.message || login.error?.message
@@ -49,12 +21,11 @@ function AuthForm({ setIsAuthenticated }) {
                             ? "Create an account"
                             : "Welcome to NodeOllama!"}
                     </div>
-                    {resError ? (
+                    {resError && (
                         <div className="text-red-500">
                             {errMessage || "Something went wrong"}
                         </div>
-                    ) : null}
-                    <div></div>
+                    )}
                     <TextInput
                         label="Email address"
                         placeholder="hello@gmail.com"
@@ -73,7 +44,7 @@ function AuthForm({ setIsAuthenticated }) {
                         onChange={handleChange}
                         error={errors.password}
                     />
-                    {showRegister ? (
+                    {showRegister && (
                         <PasswordInput
                             label="Confirm Password"
                             placeholder="Confirm your password"
@@ -83,7 +54,7 @@ function AuthForm({ setIsAuthenticated }) {
                             onChange={handleChange}
                             error={errors.confirmPassword}
                         />
-                    ) : null}
+                    )}
                     <Button
                         fullWidth
                         className="mt-3"
@@ -98,7 +69,6 @@ function AuthForm({ setIsAuthenticated }) {
                                 <Anchor
                                     onClick={() => {
                                         setShowRegister(false)
-                                        setCredentials(initialCredentials)
                                     }}
                                 >
                                     Login
@@ -110,7 +80,6 @@ function AuthForm({ setIsAuthenticated }) {
                                 <Anchor
                                     onClick={() => {
                                         setShowRegister(true)
-                                        setCredentials(initialCredentials)
                                     }}
                                 >
                                     Register
