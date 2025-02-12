@@ -52,13 +52,13 @@ function AuthForm() {
                             error={errors.confirmPassword}
                         />
                     ) : null}
-                    <Button fullWidth className="mt-3" onClick={() => handleSubmit(showRegister)}>
+                    <Button fullWidth className="mt-3 my-2" onClick={() => handleSubmit(showRegister)}>
                         {showRegister ? "Register" : "Login"}
                     </Button>
-                    <>
+                    <div className="py-2 text-sm">
                         {showRegister ? "Already have an account?" : "Don't have an account?"}{" "}
                         <Anchor onClick={() => updateAuth({ showRegister: !showRegister })}>{showRegister ? "Login" : "Register"}</Anchor>
-                    </>
+                    </div>
                 </div>
             </div>
         </div>
