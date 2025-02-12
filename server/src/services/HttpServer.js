@@ -21,6 +21,7 @@ class HttpServer {
         req.query = parsedUrl.query
         req.pathname = parsedUrl.pathname
         req.params = {}
+        req.cookies = this.parseCookies(req)
 
         const routeHandler = this.matchRoute(req.method, req.pathname)
 
@@ -38,16 +39,24 @@ class HttpServer {
         routeHandler(req, new HttpResponse(res))
     }
 
+    parseCookies(req) {
+        const rawCookies = req.headers.cookie || ""
+
+        return rawCookies.split(";").reduce((acc, cookie) => {
+            const [key, ...valueParts] = cookie.split("=")
+            if (!key || valueParts.length === 0) return acc
+
+            const value = valueParts.join("=").trim()
+            acc[key.trim()] = value
+            return acc
+        }, {})
+    }
+
     setCorsHeaders(res) {
         res.setHeader("Access-Control-Allow-Origin", UI_BASE_URL)
-        res.setHeader(
-            "Access-Control-Allow-Methods",
-            "GET, POST, PUT, DELETE, OPTIONS"
-        )
-        res.setHeader(
-            "Access-Control-Allow-Headers",
-            "Content-Type, Authorization"
-        )
+        res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+        res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        res.setHeader("Access-Control-Allow-Credentials", "true")
     }
 
     matchRoute(method, pathname) {
