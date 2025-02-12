@@ -1,12 +1,12 @@
 import { Anchor, Button, PasswordInput, Text, TextInput } from "@mantine/core"
 
+import { AppContext } from "./App"
 import { useAuth } from "./hooks/useAuth"
-import { useState } from "react"
+import { useContext } from "react"
 
 function AuthForm() {
-    const [showRegister, setShowRegister] = useState(false)
-
-    const { credentials, errors, handleChange, handleSubmit, register, login, isPending } = useAuth(setShowRegister)
+    const { setShowRegister, showRegister } = useContext(AppContext)
+    const { credentials, errors, handleChange, handleSubmit, register, login, isPending } = useAuth()
 
     const resError = register.isError || login.isError
     const errMessage = register.error?.message || login.error?.message

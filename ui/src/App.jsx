@@ -11,9 +11,10 @@ export const AppContext = createContext()
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const [showRegister, setShowRegister] = useState(false)
 
     return (
-        <AppContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+        <AppContext.Provider value={{ isAuthenticated, setIsAuthenticated, setShowRegister, showRegister }}>
             <MantineProvider defaultColorScheme="dark">{isAuthenticated ? <ChatUI /> : <AuthForm />}</MantineProvider>
         </AppContext.Provider>
     )

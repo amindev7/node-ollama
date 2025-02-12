@@ -5,10 +5,10 @@ import { AppContext } from "../App"
 
 const baseUrl = import.meta.env.VITE_API_URL
 
-export function useAuth(setShowRegister) {
-    const { isAuthenticated, setIsAuthenticated } = useContext(AppContext)
+export function useAuth() {
+    const { isAuthenticated, setIsAuthenticated, setShowRegister, showRegister } = useContext(AppContext)
 
-    const [credentials, setCredentials] = useState({ email: "", password: "", confirmPassword: "" })
+    const [credentials, setCredentials] = useState(initialValues)
     const [errors, setErrors] = useState({})
 
     const authStatus = useQuery({
@@ -26,6 +26,10 @@ export function useAuth(setShowRegister) {
             return response.json()
         },
     })
+
+    useEffect(() => {
+        setCredentials(initialValues)
+    }, [showRegister])
 
     useEffect(() => {
         if (!authStatus.isPending) {
@@ -84,6 +88,7 @@ export function useAuth(setShowRegister) {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
+                credentials: "include",
             })
 
             if (!response.ok) {
@@ -92,6 +97,7 @@ export function useAuth(setShowRegister) {
             }
 
             setShowRegister(false)
+            setIsAuthenticated(true)
             return response.json()
         },
     })
@@ -137,3 +143,5 @@ export function useAuth(setShowRegister) {
         logout,
     }
 }
+
+const initialValues = { email: "", password: "", confirmPassword: "" }
