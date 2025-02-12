@@ -16,20 +16,16 @@ export default (server) => {
                 return res.status(400).json({ error: "Invalid email format" })
             }
 
-            const existingUser = await User.getByEmail(email)
-
-            if (existingUser) {
+            if (await User.getByEmail(email)) {
                 return res.badRequest({ error: "Email is already registered" })
             }
 
             const hashedPassword = await bcrypt.hash(password, 12)
-
             const user = await User.create(email, hashedPassword)
+            const token = generateToken(user)
 
-            return res.created({
-                message: "User registered successfully",
-                userId: user.id,
-            })
+            setAuthCookie(res, token)
+            return res.created({ message: "User registered successfully", userId: user.id })
         } catch (err) {
             console.error(err)
             return res.serverError({ error: "Registration failed" })
@@ -41,31 +37,12 @@ export default (server) => {
             const { email, password } = req.body
             const user = await User.getByEmail(email)
 
-            if (!user) {
-                return res.badRequest({ error: "User not found" })
-            }
-
-            if (!password || !user.password) {
+            if (!user || !password || !user.password || !(await bcrypt.compare(password, user.password))) {
                 return res.badRequest({ error: "Invalid credentials" })
             }
 
-            const match = await bcrypt.compare(password, user.password)
-
-            if (!match) {
-                return res.badRequest({ error: "Invalid credentials" })
-            }
-
-            const token = jwt.sign({ userId: user.id, email: user.email, app: "node-ollama-v1" }, PRIVATE_KEY, {
-                algorithm: "RS256",
-                expiresIn: "1h",
-            })
-
-            // Set the HTTP-only cookie
-            res.setHeader(
-                "Set-Cookie",
-                `token=${token}; HttpOnly; Path=/; Max-Age=3600; ${process.env.NODE_ENV === "production" ? "Secure; SameSite=Strict" : ""}`
-            )
-
+            const token = generateToken(user)
+            setAuthCookie(res, token)
             return res.ok({ message: "Login successful" })
         } catch (err) {
             console.error(err)
@@ -107,6 +84,16 @@ export default (server) => {
         } catch (error) {
             return new HttpResponse(res).badRequest({ error: "Invalid or expired token" })
         }
+    }
+
+    const generateToken = (user) => {
+        return jwt.sign({ userId: user.id, email: user.email, app: "node-ollama-v1" }, PRIVATE_KEY, { algorithm: "RS256", expiresIn: "1h" })
+    }
+
+    const setAuthCookie = (res, token) => {
+        const cookieOptions = ["HttpOnly", "Path=/", "Max-Age=3600"]
+        cookieOptions.push("Secure", "SameSite=Strict")
+        res.setHeader("Set-Cookie", `token=${token}; ${cookieOptions.join("; ")}`)
     }
 
     // server.get("/protected-route", authenticate, (req, res) => {
