@@ -1,20 +1,17 @@
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useMutation, useQuery } from "@tanstack/react-query"
+
+import { AppContext } from "../App"
 
 const baseUrl = import.meta.env.VITE_API_URL
 
 export function useAuth(setShowRegister) {
-    const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const { isAuthenticated, setIsAuthenticated } = useContext(AppContext)
 
-    const [credentials, setCredentials] = useState({
-        email: "",
-        password: "",
-        confirmPassword: "",
-    })
-
+    const [credentials, setCredentials] = useState({ email: "", password: "", confirmPassword: "" })
     const [errors, setErrors] = useState({})
 
-    const { data, error, isPending } = useQuery({
+    const authStatus = useQuery({
         queryKey: ["auth-status"],
         queryFn: async () => {
             const response = await fetch(`${baseUrl}/auth/status`, {
@@ -31,15 +28,10 @@ export function useAuth(setShowRegister) {
     })
 
     useEffect(() => {
-        if (isPending) {
-            return
+        if (!authStatus.isPending) {
+            setIsAuthenticated(!!authStatus.data?.authenticated && !authStatus.error)
         }
-        if (error) {
-            setIsAuthenticated(false)
-        } else if (data?.authenticated) {
-            setIsAuthenticated(true)
-        }
-    }, [data, error])
+    }, [authStatus])
 
     const handleChange = (event) => {
         const { name, value, type, checked } = event.target
@@ -79,6 +71,7 @@ export function useAuth(setShowRegister) {
         setErrors({})
 
         const authAction = isRegister ? register : login
+
         authAction.mutate({
             email: credentials.email,
             password: credentials.password,
@@ -98,10 +91,7 @@ export function useAuth(setShowRegister) {
                 throw new Error(res.error || "Registration failed")
             }
 
-            if (setShowRegister) {
-                setShowRegister(false)
-            }
-
+            setShowRegister(false)
             return response.json()
         },
     })
@@ -120,11 +110,18 @@ export function useAuth(setShowRegister) {
                 throw new Error(res.error || "Login failed")
             }
 
-            if (setIsAuthenticated) {
-                setIsAuthenticated(true)
-            }
-
+            setIsAuthenticated(true)
             return response.json()
+        },
+    })
+
+    const logout = useMutation({
+        mutationFn: async () => {
+            await fetch(`${baseUrl}/logout`, {
+                method: "POST",
+                credentials: "include",
+            })
+            setIsAuthenticated(false)
         },
     })
 
@@ -136,6 +133,7 @@ export function useAuth(setShowRegister) {
         register,
         login,
         isAuthenticated,
-        isPending,
+        isPending: authStatus.isPending,
+        logout,
     }
 }

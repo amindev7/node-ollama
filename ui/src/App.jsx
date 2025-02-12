@@ -1,20 +1,21 @@
 import "./App.css"
 import "@mantine/core/styles.css"
 
+import { createContext, useState } from "react"
+
 import AuthForm from "./AuthForm"
+import ChatUI from "./ChatUI"
 import { MantineProvider } from "@mantine/core"
-import { createContext } from "react"
-import { useAuth } from "./hooks/useAuth"
 
 export const AppContext = createContext()
 
 function App() {
-    const { isAuthenticated } = useAuth()
+    const [isAuthenticated, setIsAuthenticated] = useState(false)
 
     return (
-        <MantineProvider defaultColorScheme="dark">
-            <AppContext.Provider value={{ isAuthenticated }}>{isAuthenticated ? <div></div> : <AuthForm />}</AppContext.Provider>
-        </MantineProvider>
+        <AppContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+            <MantineProvider defaultColorScheme="dark">{isAuthenticated ? <ChatUI /> : <AuthForm />}</MantineProvider>
+        </AppContext.Provider>
     )
 }
 
