@@ -1,10 +1,17 @@
 class HttpResponse {
     constructor(res) {
         this.res = res
+        this.headers = {
+            "Content-Type": "application/json",
+        }
+    }
+
+    setHeader(name, value) {
+        this.headers[name] = value
     }
 
     send(status, data) {
-        this.res.writeHead(status, { "Content-Type": "application/json" })
+        this.res.writeHead(status, this.headers)
         this.res.end(JSON.stringify(data))
     }
 
