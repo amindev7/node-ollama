@@ -6,7 +6,7 @@ import { AppContext } from "../App"
 const baseUrl = import.meta.env.VITE_API_URL
 
 export function useAuth() {
-    const { isAuthenticated, setIsAuthenticated, setShowRegister, showRegister } = useContext(AppContext)
+    const { isAuthenticated, updateAuth, showRegister } = useContext(AppContext)
 
     const [credentials, setCredentials] = useState(initialValues)
     const [errors, setErrors] = useState({})
@@ -14,10 +14,7 @@ export function useAuth() {
     const authStatus = useQuery({
         queryKey: ["auth-status"],
         queryFn: async () => {
-            const response = await fetch(`${baseUrl}/auth/status`, {
-                method: "GET",
-                credentials: "include",
-            })
+            const response = await fetch(`${baseUrl}/auth/status`, { method: "GET", credentials: "include" })
 
             if (!response.ok) {
                 throw new Error("Not authenticated")
@@ -32,10 +29,9 @@ export function useAuth() {
     }, [showRegister])
 
     useEffect(() => {
-        if (!authStatus.isPending) {
-            setIsAuthenticated(!!authStatus.data?.authenticated && !authStatus.error)
-        }
-    }, [authStatus])
+        if (authStatus.isPending) return
+        updateAuth({ isAuthenticated: !!authStatus.data?.authenticated && !authStatus.error })
+    }, [authStatus.error, authStatus.isPending, authStatus.data])
 
     const handleChange = (event) => {
         const { name, value, type, checked } = event.target
@@ -96,8 +92,7 @@ export function useAuth() {
                 throw new Error(res.error || "Registration failed")
             }
 
-            setShowRegister(false)
-            setIsAuthenticated(true)
+            updateAuth({ showRegister: false, isAuthenticated: true })
             return response.json()
         },
     })
@@ -116,7 +111,7 @@ export function useAuth() {
                 throw new Error(res.error || "Login failed")
             }
 
-            setIsAuthenticated(true)
+            updateAuth({ showRegister: false, isAuthenticated: true })
             return response.json()
         },
     })
@@ -127,8 +122,8 @@ export function useAuth() {
                 method: "POST",
                 credentials: "include",
             })
-            setIsAuthenticated(false)
         },
+        onSuccess: () => updateAuth({ isAuthenticated: false }),
     })
 
     return {

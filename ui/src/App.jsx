@@ -7,16 +7,17 @@ import AuthForm from "./AuthForm"
 import ChatUI from "./ChatUI"
 import { MantineProvider } from "@mantine/core"
 
-export const AppContext = createContext()
+export const AppContext = createContext(null)
 
 function App() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false)
-    const [showRegister, setShowRegister] = useState(false)
+    const [auth, setAuth] = useState({ isAuthenticated: false, showRegister: false })
+
+    const updateAuth = (updates) => setAuth((prev) => ({ ...prev, ...updates }))
 
     return (
-        <AppContext.Provider value={{ isAuthenticated, setIsAuthenticated, setShowRegister, showRegister }}>
-            <MantineProvider defaultColorScheme="dark">{isAuthenticated ? <ChatUI /> : <AuthForm />}</MantineProvider>
-        </AppContext.Provider>
+        <MantineProvider defaultColorScheme="dark">
+            <AppContext.Provider value={{ auth, updateAuth }}>{auth.isAuthenticated ? <ChatUI /> : <AuthForm />}</AppContext.Provider>
+        </MantineProvider>
     )
 }
 

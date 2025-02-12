@@ -1,11 +1,11 @@
-import { Anchor, Button, PasswordInput, Text, TextInput } from "@mantine/core"
+import { Anchor, Button, PasswordInput, TextInput } from "@mantine/core"
 
 import { AppContext } from "./App"
 import { useAuth } from "./hooks/useAuth"
 import { useContext } from "react"
 
 function AuthForm() {
-    const { setShowRegister, showRegister } = useContext(AppContext)
+    const { auth, updateAuth } = useContext(AppContext)
     const { credentials, errors, handleChange, handleSubmit, register, login, isPending } = useAuth()
 
     const resError = register.isError || login.isError
@@ -14,6 +14,8 @@ function AuthForm() {
     if (isPending) {
         return null
     }
+
+    const showRegister = auth.showRegister
 
     return (
         <div className="flex justify-center m-[10%]">
@@ -39,7 +41,7 @@ function AuthForm() {
                         onChange={handleChange}
                         error={errors.password}
                     />
-                    {showRegister && (
+                    {showRegister ? (
                         <PasswordInput
                             label="Confirm Password"
                             placeholder="Confirm your password"
@@ -49,21 +51,14 @@ function AuthForm() {
                             onChange={handleChange}
                             error={errors.confirmPassword}
                         />
-                    )}
+                    ) : null}
                     <Button fullWidth className="mt-3" onClick={() => handleSubmit(showRegister)}>
                         {showRegister ? "Register" : "Login"}
                     </Button>
-                    <Text ta="center" mt="md">
-                        {showRegister ? (
-                            <>
-                                Already have an account? <Anchor onClick={() => setShowRegister(false)}>Login</Anchor>
-                            </>
-                        ) : (
-                            <>
-                                Don&apos;t have an account? <Anchor onClick={() => setShowRegister(true)}>Register</Anchor>
-                            </>
-                        )}
-                    </Text>
+                    <>
+                        {showRegister ? "Already have an account?" : "Don't have an account?"}{" "}
+                        <Anchor onClick={() => updateAuth({ showRegister: !showRegister })}>{showRegister ? "Login" : "Register"}</Anchor>
+                    </>
                 </div>
             </div>
         </div>
