@@ -3,29 +3,24 @@ import { Anchor, Button, PasswordInput, Text, TextInput } from "@mantine/core"
 import { useAuth } from "./hooks/useAuth"
 import { useState } from "react"
 
-function AuthForm({ setIsAuthenticated }) {
+function AuthForm() {
     const [showRegister, setShowRegister] = useState(false)
 
-    const { credentials, errors, handleChange, handleSubmit, register, login } =
-        useAuth(setIsAuthenticated, setShowRegister)
+    const { credentials, errors, handleChange, handleSubmit, register, login, isPending } = useAuth(setShowRegister)
 
     const resError = register.isError || login.isError
     const errMessage = register.error?.message || login.error?.message
+
+    if (isPending) {
+        return null
+    }
 
     return (
         <div className="flex justify-center m-[10%]">
             <div className="shadow-2xl p-6 max-h-fit">
                 <div className="py-1 w-96">
-                    <div className="p-4 text-2xl">
-                        {showRegister
-                            ? "Create an account"
-                            : "Welcome to NodeOllama!"}
-                    </div>
-                    {resError && (
-                        <div className="text-red-500">
-                            {errMessage || "Something went wrong"}
-                        </div>
-                    )}
+                    <div className="p-4 text-2xl">{showRegister ? "Create an account" : "Welcome to NodeOllama!"}</div>
+                    {resError && <div className="text-red-500">{errMessage || "Something went wrong"}</div>}
                     <TextInput
                         label="Email address"
                         placeholder="hello@gmail.com"
@@ -55,35 +50,17 @@ function AuthForm({ setIsAuthenticated }) {
                             error={errors.confirmPassword}
                         />
                     )}
-                    <Button
-                        fullWidth
-                        className="mt-3"
-                        onClick={() => handleSubmit(showRegister)}
-                    >
+                    <Button fullWidth className="mt-3" onClick={() => handleSubmit(showRegister)}>
                         {showRegister ? "Register" : "Login"}
                     </Button>
                     <Text ta="center" mt="md">
                         {showRegister ? (
                             <>
-                                Already have an account?{" "}
-                                <Anchor
-                                    onClick={() => {
-                                        setShowRegister(false)
-                                    }}
-                                >
-                                    Login
-                                </Anchor>
+                                Already have an account? <Anchor onClick={() => setShowRegister(false)}>Login</Anchor>
                             </>
                         ) : (
                             <>
-                                Don&apos;t have an account?{" "}
-                                <Anchor
-                                    onClick={() => {
-                                        setShowRegister(true)
-                                    }}
-                                >
-                                    Register
-                                </Anchor>
+                                Don&apos;t have an account? <Anchor onClick={() => setShowRegister(true)}>Register</Anchor>
                             </>
                         )}
                     </Text>

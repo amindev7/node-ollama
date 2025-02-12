@@ -1,9 +1,11 @@
-import { useMutation } from "@tanstack/react-query"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useMutation, useQuery } from "@tanstack/react-query"
 
 const baseUrl = import.meta.env.VITE_API_URL
 
-export function useAuth(setIsAuthenticated, setShowRegister) {
+export function useAuth(setShowRegister) {
+    const [isAuthenticated, setIsAuthenticated] = useState(false)
+
     const [credentials, setCredentials] = useState({
         email: "",
         password: "",
@@ -11,6 +13,33 @@ export function useAuth(setIsAuthenticated, setShowRegister) {
     })
 
     const [errors, setErrors] = useState({})
+
+    const { data, error, isPending } = useQuery({
+        queryKey: ["auth-status"],
+        queryFn: async () => {
+            const response = await fetch(`${baseUrl}/auth/status`, {
+                method: "GET",
+                credentials: "include",
+            })
+
+            if (!response.ok) {
+                throw new Error("Not authenticated")
+            }
+
+            return response.json()
+        },
+    })
+
+    useEffect(() => {
+        if (isPending) {
+            return
+        }
+        if (error) {
+            setIsAuthenticated(false)
+        } else if (data?.authenticated) {
+            setIsAuthenticated(true)
+        }
+    }, [data, error])
 
     const handleChange = (event) => {
         const { name, value, type, checked } = event.target
@@ -30,8 +59,7 @@ export function useAuth(setIsAuthenticated, setShowRegister) {
 
         if (isRegister) {
             if (credentials.password.length < 6) {
-                newErrors.password =
-                    "Password must be at least 6 characters long."
+                newErrors.password = "Password must be at least 6 characters long."
             }
             if (credentials.password !== credentials.confirmPassword) {
                 newErrors.confirmPassword = "Passwords do not match."
@@ -84,6 +112,7 @@ export function useAuth(setIsAuthenticated, setShowRegister) {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
+                credentials: "include",
             })
 
             if (!response.ok) {
@@ -106,5 +135,7 @@ export function useAuth(setIsAuthenticated, setShowRegister) {
         handleSubmit,
         register,
         login,
+        isAuthenticated,
+        isPending,
     }
 }
