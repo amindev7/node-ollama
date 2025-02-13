@@ -8,11 +8,20 @@ class HttpResponse {
 
     setHeader(name, value) {
         this.headers[name] = value
+        this.res.setHeader(name, value)
     }
 
     send(status, data) {
         this.res.writeHead(status, this.headers)
         this.res.end(JSON.stringify(data))
+    }
+
+    write(data) {
+        this.res.write(data) // Expose write for streaming
+    }
+
+    end() {
+        this.res.end() // Expose end for streaming
     }
 
     ok(data) {
