@@ -8,11 +8,76 @@ function ChatUI() {
 
     const [messages, setMessages] = useState([{ text: "Hello! How can I help you?", sender: "bot" }])
     const [input, setInput] = useState("")
+    const [loading, setLoading] = useState(false)
 
-    const sendMessage = () => {
-        if (!input.trim()) return
-        setMessages([...messages, { text: input, sender: "user" }])
+    const sendMessage = async () => {
+        if (!input.trim()) {
+            return
+        }
+
+        const userMessage = { text: input, sender: "user" }
+        setMessages((prev) => [...prev, userMessage])
         setInput("")
+        setLoading(true)
+
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/generate`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt: input }),
+            })
+
+            if (!response.ok) {
+                throw new Error("Failed to send message")
+            }
+
+            const reader = response.body.getReader()
+            const decoder = new TextDecoder()
+
+            let botMessage = { text: "", sender: "bot" }
+            setMessages((prev) => [...prev, botMessage])
+
+            while (true) {
+                const { value, done } = await reader.read()
+
+                if (done) {
+                    break
+                }
+
+                const chunk = decoder.decode(value, { stream: true })
+
+                chunk.split("\n").forEach((line) => {
+                    if (line.startsWith("data:")) {
+                        try {
+                            const parsed = JSON.parse(line.replace("data: ", ""))
+
+                            if (parsed.response) {
+                                let cleanedResponse = parsed.response.replace(/<think>|<\/think>/g, "")
+
+                                setMessages((prev) => {
+                                    const newMessages = [...prev]
+                                    const lastMessageIndex = newMessages.length - 1
+
+                                    if (newMessages[lastMessageIndex].sender === "bot") {
+                                        if (!newMessages[lastMessageIndex].text.endsWith(cleanedResponse)) {
+                                            newMessages[lastMessageIndex].text += cleanedResponse
+                                        }
+                                    }
+
+                                    return newMessages
+                                })
+                            }
+                        } catch (e) {
+                            console.error("Error parsing stream data:", e)
+                        }
+                    }
+                })
+            }
+        } catch (error) {
+            console.error("Error:", error)
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
@@ -55,8 +120,11 @@ function ChatUI() {
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                            disabled={loading}
                         />
-                        <Button className="" onClick={sendMessage}></Button>
+                        <Button className="" onClick={sendMessage} disabled={loading}>
+                            {loading ? "Thinking..." : "Send"}
+                        </Button>
                     </div>
                 </div>
             </div>
