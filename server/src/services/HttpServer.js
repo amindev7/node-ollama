@@ -29,6 +29,14 @@ class HttpServer {
             return new HttpResponse(res).notFound({ error: "Not Found" })
         }
 
+        if (req.headers.accept === "text/event-stream") {
+            // SSE Connection: Keep the response open
+            res.setHeader("Content-Type", "text/event-stream")
+            res.setHeader("Cache-Control", "no-cache")
+            res.setHeader("Connection", "keep-alive")
+            res.flushHeaders()
+        }
+
         if (["POST", "PUT"].includes(req.method)) {
             return this.parseRequestBody(req, res, (body) => {
                 req.body = body

@@ -24,16 +24,34 @@ export default (server) => {
         }
     })
 
-    const prompt = {
-        model: deepSeek.model,
-        prompt: "Why is the sky blue?",
-        stream: false,
-    }
+    server.post("/generate", async (req, res) => {
+        res.setHeader("Content-Type", "text/event-stream")
+        res.setHeader("Cache-Control", "no-cache")
+        res.setHeader("Connection", "keep-alive")
 
-    server.get("/generate", async (req, res) => {
+        const prompt = {
+            model: deepSeek.model,
+            prompt: req.body.prompt,
+            stream: true,
+        }
+
         try {
-            const response = await ollamaApi.post("/api/generate", prompt)
-            res.ok(response)
+            const responseStream = await ollamaApi.postStream("/api/generate", prompt)
+
+            responseStream.on("data", (chunk) => {
+                res.write(`data: ${chunk.toString()}\n\n`)
+            })
+
+            responseStream.on("end", () => {
+                res.write("event: done\n\n")
+                res.end()
+            })
+
+            responseStream.on("error", (err) => {
+                console.error("Stream error:", err)
+                res.write("event: error\ndata: Failed to stream response\n\n")
+                res.end()
+            })
         } catch (err) {
             console.error(err)
             res.serverError({ error: "Failed to generate response" })

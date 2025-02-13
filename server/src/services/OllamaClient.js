@@ -9,7 +9,7 @@ class OllamaClient {
         this.port = port
     }
 
-    request(method, path, data = null, headers = {}) {
+    request(method, path, data = null, headers = {}, isStream = false) {
         return new Promise((resolve, reject) => {
             const options = {
                 hostname: this.host,
@@ -23,6 +23,10 @@ class OllamaClient {
             }
 
             const req = http.request(options, (res) => {
+                if (isStream) {
+                    return resolve(res)
+                }
+
                 let responseData = ""
 
                 res.on("data", (chunk) => (responseData += chunk))
@@ -48,6 +52,10 @@ class OllamaClient {
 
     post(path, data, headers = {}) {
         return this.request("POST", path, data, headers)
+    }
+
+    postStream(path, data, headers = {}) {
+        return this.request("POST", path, data, headers, true)
     }
 
     get(path, headers = {}) {
