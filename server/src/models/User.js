@@ -1,24 +1,24 @@
-import DB from "../services/DB.js"
+import Database from "../db/Database.js"
 
 const User = {
     create: (email, password) => {
         const query = `INSERT INTO users (email, password) VALUES (?, ?)`
-        return DB.execute(query, [email, password])
+        return Database.execute(query, [email, password])
     },
 
     getAll: () => {
         const query = `SELECT id, email FROM users`
-        return DB.findAll(query)
+        return Database.findAll(query)
     },
 
     getById: (id) => {
         const query = `SELECT id, email, password FROM users WHERE id = ?`
-        return DB.find(query, [id])
+        return Database.find(query, [id])
     },
 
     getByEmail: (email) => {
         const query = `SELECT id, email, password FROM users WHERE email = ?`
-        return DB.find(query, [email])
+        return Database.find(query, [email])
     },
 }
 

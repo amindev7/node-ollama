@@ -1,6 +1,6 @@
-import db from "../config/db.js"
+import db from "./connection.js"
 
-class DB {
+class Database {
     static execute(sql, params = []) {
         return new Promise((resolve, reject) => {
             db.run(sql, params, function (err) {
@@ -18,17 +18,13 @@ class DB {
 
     static find(sql, params = []) {
         return new Promise((resolve, reject) => {
-            db.get(sql, params, (err, row) =>
-                err ? reject(err) : resolve(row)
-            )
+            db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row)))
         })
     }
 
     static findAll(sql, params = []) {
         return new Promise((resolve, reject) => {
-            db.all(sql, params, (err, rows) =>
-                err ? reject(err) : resolve(rows)
-            )
+            db.all(sql, params, (err, rows) => (err ? reject(err) : resolve(rows)))
         })
     }
 
@@ -46,4 +42,4 @@ class DB {
     }
 }
 
-export default DB
+export default Database

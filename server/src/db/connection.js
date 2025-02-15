@@ -11,7 +11,7 @@ if (!fs.existsSync(dbDir)) {
     fs.mkdirSync(dbDir, { recursive: true })
 }
 
-const db = new sqlite3.Database(dbPath, (err) => {
+const connection = new sqlite3.Database(dbPath, (err) => {
     if (err) {
         console.error("❌ DB Connection Error:", err)
     } else {
@@ -19,4 +19,4 @@ const db = new sqlite3.Database(dbPath, (err) => {
     }
 })
 
-export default db
+export default connection

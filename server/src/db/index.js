@@ -1,8 +1,8 @@
-import DB from "../services/DB.js"
+import Database from "../services/Database.js"
 
-async function initializeDatabase() {
+async function initializeDB() {
     try {
-        await DB.execute(`CREATE TABLE IF NOT EXISTS users (
+        await Database.execute(`CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             email TEXT NOT NULL UNIQUE,
             password TEXT NOT NULL
@@ -14,4 +14,4 @@ async function initializeDatabase() {
     }
 }
 
-export default initializeDatabase
+export default initializeDB
