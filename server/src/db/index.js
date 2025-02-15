@@ -1,4 +1,4 @@
-import Database from "../services/Database.js"
+import Database from "./Database.js"
 
 async function initializeDB() {
     try {
