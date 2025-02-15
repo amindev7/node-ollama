@@ -1,7 +1,10 @@
-import { Button, Input } from "@mantine/core"
+import { Button, Input, LoadingOverlay, Select } from "@mantine/core"
 
 import { useAuth } from "./hooks/useAuth"
+import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
+
+const baseUrl = import.meta.env.VITE_API_URL
 
 function ChatUI() {
     const { logout } = useAuth()
@@ -9,6 +12,20 @@ function ChatUI() {
     const [messages, setMessages] = useState([{ text: "Hello! How can I help you?", sender: "bot" }])
     const [input, setInput] = useState("")
     const [loading, setLoading] = useState(false)
+    const [selectedModel, setSelectedModel] = useState("deepseek-r1:1.5b")
+
+    const pullModel = useQuery({
+        queryKey: [selectedModel],
+        queryFn: async () => {
+            const response = await fetch(`${baseUrl}/models/pull?model=${selectedModel}`, { method: "GET", credentials: "include" })
+
+            if (!response.ok) {
+                throw new Error("filed to pull model")
+            }
+
+            return response.json()
+        },
+    })
 
     const sendMessage = async () => {
         if (!input.trim()) {
@@ -21,10 +38,10 @@ function ChatUI() {
         setLoading(true)
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/generate`, {
+            const response = await fetch(`${baseUrl}/generate`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prompt: input }),
+                body: JSON.stringify({ prompt: input, model: selectedModel }),
             })
 
             if (!response.ok) {
@@ -82,12 +99,19 @@ function ChatUI() {
 
     return (
         <div className="h-screen text-white">
+            <LoadingOverlay visible={pullModel.isPending} loaderProps={{ type: "bars", size: 50 }}>
+                <div>pulling model...</div>
+            </LoadingOverlay>
+
             {/* Header */}
-            <div className="flex items-center justify-end space-x-4 p-4 border-b border-gray-700 bg-gray-800">
+            <div className="flex justify-between space-x-4 p-4 border-b border-gray-700 bg-gray-800 w-full">
                 <h2 className="text-lg font-bold">NodeOllama</h2>
-                <div className="flex items-center space-x-4">Settings</div>
-                <div className="flex items-center space-x-4" onClick={() => logout.mutate()}>
-                    Logout
+                <Select data={models} value={selectedModel} onChange={setSelectedModel} searchable />
+                <div className="flex space-x-4">
+                    <div className="">Settings</div>
+                    <div className="" onClick={() => logout.mutate()}>
+                        Logout
+                    </div>
                 </div>
             </div>
 
@@ -133,3 +157,20 @@ function ChatUI() {
 }
 
 export default ChatUI
+
+const models = [
+    "deepseek-r1:1.5b",
+    "deepseek-r1:7b",
+    "deepseek-r1:8b",
+    "deepseek-coder-v2:16b",
+    "deepseek-coder",
+    "deepseek-coder:6.7b",
+    "gemma:2b",
+    "gemma:7b",
+    "gemma2:2b",
+    "llama3.2",
+    "llama3.2:1b",
+    "qwen:1.8b",
+    "qwen:4b",
+    "qwen:7b",
+]

@@ -1,7 +1,6 @@
 import OllamaClient from "../services/OllamaClient.js"
 
 const ollamaApi = new OllamaClient()
-const deepSeek = { model: "deepseek-r1:1.5b" }
 
 export default (server) => {
     server.get("/models", async (req, res) => {
@@ -15,12 +14,26 @@ export default (server) => {
     })
 
     server.get("/models/pull", async (req, res) => {
+        const model = req.query.model
+
+        if (!model) {
+            return res.badRequest({ error: "Model parameter is required" })
+        }
+
         try {
-            const response = await ollamaApi.post("/api/pull", deepSeek)
-            res.ok(response)
+            // Check if the model exists
+            // const modelsList = await ollamaApi.get("/api/tags").then((res) => res.json())
+            // const modelExists = modelsList.some((m) => m.name === model)
+
+            // if (modelExists) {
+            //     return res.ok({ message: "Model already exists", model })
+            // }
+
+            const response = await ollamaApi.post("/api/pull", { model })
+            res.ok({ model })
         } catch (err) {
             console.error(err)
-            res.serverError({ error: "Failed to fetch models" })
+            res.serverError({ error: "Failed to pull model" })
         }
     })
 
@@ -29,13 +42,19 @@ export default (server) => {
         res.setHeader("Cache-Control", "no-cache")
         res.setHeader("Connection", "keep-alive")
 
-        const prompt = {
-            model: deepSeek.model,
-            prompt: req.body.prompt,
-            stream: true,
+        const model = req.body.model
+
+        if (!model) {
+            return res.badRequest({ error: "Model parameter is required" })
         }
 
         try {
+            const prompt = {
+                model,
+                prompt: req.body.prompt,
+                stream: true,
+            }
+
             const responseStream = await ollamaApi.postStream("/api/generate", prompt)
 
             responseStream.on("data", (chunk) => {
