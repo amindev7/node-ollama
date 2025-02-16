@@ -1,4 +1,4 @@
-import HttpResponse from "../services/HttpResponse.js"
+import HttpResponse from "../core/HttpResponse.js"
 import User from "../models/User.js"
 
 const AuthController = {

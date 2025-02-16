@@ -1,4 +1,4 @@
-import Ollama from "../services/Ollama.js"
+import Ollama from "../core/Ollama.js"
 
 const ollamaApi = new Ollama()
 

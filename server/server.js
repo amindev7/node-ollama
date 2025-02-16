@@ -1,4 +1,4 @@
-import HttpServer from "./src/services/HttpServer.js"
+import HttpServer from "./src/core/HttpServer.js"
 import auth from "./src/routes/auth.js"
 import initializeDB from "./src/db/index.js"
 import model from "./src/routes/model.js"
