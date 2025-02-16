@@ -20,10 +20,11 @@ class HttpServer {
         for (const middleware of this.middlewares) {
             const nextCalled = await new Promise((resolve) => {
                 middleware(req, res, () => resolve(true))
+                setTimeout(() => resolve(false), 0) // If middleware does not call next, resolve false
             })
 
             if (!nextCalled) {
-                return false
+                return false // Middleware stopped execution
             }
         }
         return true
