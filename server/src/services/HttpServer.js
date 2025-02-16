@@ -1,6 +1,6 @@
 import HttpResponse from "./HttpResponse.js"
-import http from "http"
-import querystring from "querystring"
+import http from "node:http"
+import querystring from "node:querystring"
 import url from "url"
 
 const UI_BASE_URL = `${process.env.UI_URL}:${process.env.UI_PORT}`

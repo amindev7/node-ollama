@@ -1,6 +1,6 @@
 import User from "../models/User.js"
 import bcrypt from "bcrypt"
-import fs from "fs"
+import fs from "node:fs"
 import jwt from "jsonwebtoken"
 
 const PRIVATE_KEY = fs.readFileSync(process.env.JWT_PRIVATE_KEY_PATH, "utf8")

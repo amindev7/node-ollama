@@ -1,4 +1,4 @@
-import http from "http"
+import http from "node:http"
 
 const OLLAMA_HOST = process.env.OLLAMA_HOST
 const OLLAMA_PORT = process.env.OLLAMA_PORT
