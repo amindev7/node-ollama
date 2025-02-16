@@ -1,9 +1,7 @@
 class HttpResponse {
     constructor(res) {
         this.res = res
-        this.headers = {
-            "Content-Type": "application/json",
-        }
+        this.headers = { "Content-Type": "application/json" }
     }
 
     setHeader(name, value) {
@@ -11,17 +9,17 @@ class HttpResponse {
         this.res.setHeader(name, value)
     }
 
-    send(status, data) {
-        this.res.writeHead(status, this.headers)
-        this.res.end(JSON.stringify(data))
-    }
-
     write(data) {
-        this.res.write(data) // Expose write for streaming
+        this.res.write(data) // Expose write for streaming SSE
     }
 
     end() {
-        this.res.end() // Expose end for streaming
+        this.res.end() // Expose end for streaming SSE
+    }
+
+    send(status, data) {
+        this.res.writeHead(status, this.headers)
+        this.res.end(JSON.stringify(data))
     }
 
     ok(data) {
