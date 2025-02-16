@@ -68,6 +68,44 @@ class HttpServer {
         routeHandler(req, new HttpResponse(res))
     }
 
+    async fetch(url, options, isStream = false) {
+        return new Promise((resolve, reject) => {
+            const { method, headers, body } = options
+            const { hostname, port, pathname } = new URL(url)
+
+            const reqOptions = {
+                hostname,
+                port,
+                path: pathname,
+                method,
+                headers,
+            }
+
+            const req = http.request(reqOptions, (res) => {
+                if (isStream) return resolve(res)
+
+                let responseData = ""
+
+                res.on("data", (chunk) => (responseData += chunk))
+                res.on("end", () => {
+                    try {
+                        resolve(JSON.parse(responseData))
+                    } catch {
+                        resolve(responseData) // Handle non-JSON responses
+                    }
+                })
+            })
+
+            req.on("error", reject)
+
+            if (body) {
+                req.write(body)
+            }
+
+            req.end()
+        })
+    }
+
     matchRoute(method, pathname) {
         return this.routes[method]?.[pathname] || null
     }

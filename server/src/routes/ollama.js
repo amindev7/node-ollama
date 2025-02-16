@@ -1,8 +1,4 @@
-import Ollama from "../core/Ollama.js"
-
-const ollamaApi = new Ollama()
-
-export default (server) => {
+export default (server, ollamaApi) => {
     server.get("/models", async (req, res) => {
         try {
             const response = await ollamaApi.get("/api/tags")
@@ -21,15 +17,7 @@ export default (server) => {
         }
 
         try {
-            // Check if the model exists
-            // const modelsList = await ollamaApi.get("/api/tags").then((res) => res.json())
-            // const modelExists = modelsList.some((m) => m.name === model)
-
-            // if (modelExists) {
-            //     return res.ok({ message: "Model already exists", model })
-            // }
-
-            const response = await ollamaApi.post("/api/pull", { model })
+            await ollamaApi.post("/api/pull", { model })
             res.ok({ model })
         } catch (err) {
             console.error(err)
