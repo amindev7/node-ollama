@@ -1,6 +1,6 @@
-import OllamaClient from "../services/OllamaClient.js"
+import Ollama from "../services/Ollama.js"
 
-const ollamaApi = new OllamaClient()
+const ollamaApi = new Ollama()
 
 export default (server) => {
     server.get("/models", async (req, res) => {

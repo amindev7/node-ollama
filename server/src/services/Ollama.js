@@ -3,7 +3,7 @@ import http from "node:http"
 const OLLAMA_HOST = process.env.OLLAMA_HOST
 const OLLAMA_PORT = process.env.OLLAMA_PORT
 
-class OllamaClient {
+class Ollama {
     constructor(host = OLLAMA_HOST, port = OLLAMA_PORT) {
         this.host = host
         this.port = port
@@ -71,4 +71,4 @@ class OllamaClient {
     }
 }
 
-export default OllamaClient
+export default Ollama
