@@ -17,7 +17,7 @@ class OllamaClient {
             body: data ? JSON.stringify(data) : undefined,
         }
 
-        return this.httpServer.fetch(url, options, isStream) // Call fetch from HttpServer
+        return this.httpServer.fetch(url, options, isStream)
     }
 
     async post(path, data, headers = {}) {

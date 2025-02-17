@@ -25,27 +25,28 @@ export default (server, ollamaApi) => {
         }
     })
 
-    server.post("/generate", async (req, res) => {
+    server.post("/chat", async (req, res) => {
         res.setHeader("Content-Type", "text/event-stream")
         res.setHeader("Cache-Control", "no-cache")
         res.setHeader("Connection", "keep-alive")
 
-        const model = req.body.model
+        const { model, messages } = req.body
 
-        if (!model) {
-            return res.badRequest({ error: "Model parameter is required" })
+        if (!model || !Array.isArray(messages)) {
+            return res.badRequest({ error: "Model and messages array are required" })
         }
 
         try {
-            const prompt = {
+            const payload = {
                 model,
-                prompt: req.body.prompt,
+                messages,
                 stream: true,
             }
 
-            const responseStream = await ollamaApi.postStream("/api/generate", prompt)
+            const responseStream = await ollamaApi.postStream("/api/chat", payload)
 
             responseStream.on("data", (chunk) => {
+                console.log("Received chunk:", chunk.toString())
                 res.write(`data: ${chunk.toString()}\n\n`)
             })
 
@@ -61,7 +62,7 @@ export default (server, ollamaApi) => {
             })
         } catch (err) {
             console.error(err)
-            res.serverError({ error: "Failed to generate response" })
+            res.serverError({ error: "Failed to process chat" })
         }
     })
 }
