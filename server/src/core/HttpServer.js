@@ -24,7 +24,7 @@ class HttpServer {
             })
 
             if (!nextCalled) {
-                return false // Middleware stopped execution
+                return false
             }
         }
         return true

@@ -40,7 +40,7 @@ export const useChat = (model) => {
             let assistantResponse = ""
 
             await streamOllamaResponse(updatedMessages, (chunk) => {
-                // ✅ Extract JSON from chunk
+                // Extract JSON from chunk
                 const lines = chunk.split("\n").filter((line) => line.startsWith("data: "))
                 for (const line of lines) {
                     try {
@@ -48,10 +48,10 @@ export const useChat = (model) => {
                         if (json.message?.content) {
                             let cleanContent = json.message.content
 
-                            // 🚫 Remove <think> and </think> tags from the content
+                            // Remove <think> and </think> tags from the content
                             cleanContent = cleanContent.replace(/<think>|<\/think>/g, "")
 
-                            assistantResponse += cleanContent // ✅ Append cleaned content
+                            assistantResponse += cleanContent // Append cleaned content
 
                             setMessages((prev) => {
                                 const lastMessage = prev[prev.length - 1]

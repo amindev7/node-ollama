@@ -95,8 +95,4 @@ export default (server) => {
         cookieOptions.push("Secure", "SameSite=Strict")
         res.setHeader("Set-Cookie", `token=${token}; ${cookieOptions.join("; ")}`)
     }
-
-    // server.get("/protected-route", authenticate, (req, res) => {
-    //     res.ok({ message: "Welcome!", user: req.user })
-    // })
 }

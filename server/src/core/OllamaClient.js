@@ -1,6 +1,6 @@
 class OllamaClient {
     constructor(httpServer, host = process.env.OLLAMA_HOST, port = process.env.OLLAMA_PORT) {
-        this.httpServer = httpServer // Store the httpServer instance
+        this.httpServer = httpServer
         this.host = host
         this.port = port
     }

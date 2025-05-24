@@ -6,7 +6,6 @@ const dbDir = process.env.DB_DIR
 const dbFile = process.env.DB_FILE
 const dbPath = path.join(dbDir, dbFile)
 
-// Ensure the database directory exists
 if (!fs.existsSync(dbDir)) {
     fs.mkdirSync(dbDir, { recursive: true })
 }

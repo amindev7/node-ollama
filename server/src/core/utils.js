@@ -18,13 +18,13 @@ export function parseRequestBody(req) {
                     req.body = body // Raw text or other content types
                 }
 
-                resolve() // ✅ Ensure it always resolves
+                resolve()
             } catch (error) {
-                reject(new Error("Invalid request body")) // Reject properly
+                reject(new Error("Invalid request body"))
             }
         })
 
-        req.on("error", (err) => reject(err)) // Handle stream errors
+        req.on("error", (err) => reject(err))
     })
 }
 
