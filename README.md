@@ -3,6 +3,6 @@
 📂 node-ollama
 
 ┣ 📂 server — Backend service (Node.js)  
+┣ ┣ 📂 db — Database (SQLite)  
 ┣ 📂 ui — Frontend client (React)  
-┣ 📂 db — Database (SQLite)  
-┗ 📝 docker-compose.yml — Docker setup  
+┗ 📝 docker-compose.yml — Docker setup
